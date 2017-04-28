@@ -32,8 +32,10 @@ def search():
                 html2 = req2.text
                 soup = BeautifulSoup(html2, 'html.parser')
                 links = soup.find_all('meta')
+                linksW = soup.find_all('link')
                 strLink = str(links)
-                if "WordPress" in strLink:
+                strLinkW = str(linksW)
+                if "WordPress" in strLink or "wp-content" in strLinksW:
                     print link.get('href') + ' - [WORDPRESS]'
                 elif "Joomla" in strLink:
                     print link.get('href') + ' - [JOOMLA]'
@@ -64,7 +66,9 @@ def search():
                         soup2 = BeautifulSoup(html2, 'html.parser')
                         links = soup2.find_all('meta')
                         strLink = str(links)
-                        if "WordPress" in strLink:
+                        # Pide respuesta de linkk+/wp-admin/ y si da codigo 200 es que es una web wordpress
+                        req2W = requests.get(linkk+"/wp-admin/")
+                        if "WordPress" in strLink or req2W.status_code == 200:
                             print link.get('href') + ' - [WORDPRESS]'
                         elif "Joomla" in strLink:
                             print link.get('href') + ' - [JOOMLA]'
@@ -74,6 +78,7 @@ def search():
                             print link.get('href') + ' - [PRESTASHOP]'
                         else:
                             print link.get('href') + ' - [NOCMS]'
+
             except requests.exceptions.ConnectionError as error:
                  continue
 
