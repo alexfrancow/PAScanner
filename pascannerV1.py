@@ -19,7 +19,6 @@ def help():
 
 def search():
     url = 'https://www.paginasamarillas.es/search/informatica/all-ma/all-pr/all-is/all-ci/all-ba/all-pu/all-nc/'+pagina+'?cp='+lugar+'&what=informatica&where='+lugar+'&ub=false&qc=true'
-    print url
     req = requests.get(url)
     html = req.text
     soup = BeautifulSoup(html, 'html.parser')
@@ -40,6 +39,8 @@ def search():
                     print link.get('href') + ' - [JOOMLA]'
                 elif "Drupal" in strLink:
                     print link.get('href') + ' - [DRUPAL]'
+                elif "PrestaShop" in strLink:
+                    print link.get('href') + ' - [PRESTASHOP]'
                 else:
                     print link.get('href') + ' - [NOCMS]'
             except requests.exceptions.ConnectionError as error:
@@ -69,6 +70,8 @@ def search():
                             print link.get('href') + ' - [JOOMLA]'
                         elif "Drupal" in strLink:
                             print link.get('href') + ' - [DRUPAL]'
+                        elif "PrestaShop" in strLink:
+                            print link.get('href') + ' - [PRESTASHOP]'
                         else:
                             print link.get('href') + ' - [NOCMS]'
             except requests.exceptions.ConnectionError as error:
