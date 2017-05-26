@@ -77,6 +77,8 @@ def search():
                         # Mejora deteccion wordpress
                         WPThemes = soup2.find_all('link', attrs={"href": re.compile(".?./wp-content/themes/.?.")})
                         # Detector de temas
+                        WPPlugins = soup2.find_all('link', attrs={"href": re.compile(".?./wp-content/plugins/.?.")})
+                        # Detector de plugins
                         print ""
                         if "WordPress" in strLink or req2W == 200:
                             print link.get('href') + ' - [WORDPRESS]'
@@ -92,9 +94,23 @@ def search():
                                     print chr(27)+"[0;36m"+"    [*] Tema: "+chr(27)+"[0m"
                                     for theme in WPThemes:
                                         themeContent = theme["href"]
+                                        themeName = themeContent.split("/")[5]
                                         print "       - "+themeContent.split("/")[5]
+                                        WPThemeVersion = "         + "+themeContent.rpartition(themeName)[0]+themeName+"/changelog.txt"
+                                        print WPThemeVersion
                                         break
-                                    break
+                                else:
+                                    print chr(27)+"[0;36m"+"    [*] Tema: "+chr(27)+"[0m"
+                                    print "       - No encontrados"
+                                if WPPlugins:
+                                    print chr(27)+"[0;36m"+"    [*] Plugins: "+chr(27)+"[0m"
+                                    for plugin in WPPlugins:
+                                        pluginContent = plugin["href"]
+                                        print "       - "+pluginContent.split("/")[5]
+                                else:
+                                    print chr(27)+"[0;36m"+"    [*] Plugins: "+chr(27)+"[0m"
+                                    print "       - No encontrados"
+
 
                         elif "Joomla" in strLink:
                             print link.get('href') + ' - [JOOMLA]'
