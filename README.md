@@ -1,7 +1,7 @@
 # PAScanner
 
 Its is about a tool which can extract all business websites from an postal code that you choose. 
-*Its under development. 
+*It's under development. 
 Example:
 $ python pascanner.py -l 15009 
 
