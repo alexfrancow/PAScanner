@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -84,20 +85,55 @@ def search():
                             print link.get('href') + ' - [WORDPRESS]'
                             for WPVersion in WPVersions:
                                 WPVersionContent = WPVersion["content"]
-                                if str(WPVersionContent) != "WordPress 4.7.4":
+                                if str(WPVersionContent) != "WordPress 4.7.5":
                                     print chr(27)+"[0;36m"+"    [*] Version: "+chr(27)+"[0m"
+                                    print "    --------------------------"
                                     print chr(27)+"[0;36m"+"       - "+WPVersion["content"]+chr(27)+"[0m"+chr(27)+"[6;31m"" [OUTDATED]"+chr(27)+"[0m"
+                                    print ""
                                 else:
                                     print chr(27)+"[0;36m"+"    [*] Version: "+chr(27)+"[0m"
+                                    print "    --------------------------"
                                     print chr(27)+"[0;36m"+"       - "+WPVersion["content"]+chr(27)+"[0m"
+                                    print ""
                                 if WPThemes:
                                     print chr(27)+"[0;36m"+"    [*] Tema: "+chr(27)+"[0m"
                                     for theme in WPThemes:
                                         themeContent = theme["href"]
                                         themeName = themeContent.split("/")[5]
-                                        print "       - "+themeContent.split("/")[5]
-                                        WPThemeVersion = "         + "+themeContent.rpartition(themeName)[0]+themeName+"/changelog.txt"
-                                        print WPThemeVersion
+                                        themeStatusR = requests.get(themeContent.rpartition(themeName)[0]+themeName+"/readme.txt")
+                                        themeStatusC = requests.get(themeContent.rpartition(themeName)[0]+themeName+"/changelog.txt")
+                                        print "    --------------------------"
+                                        print "       - "+themeName
+                                        if themeStatusR.status_code == 200:
+                                            themeVContentR = str(themeStatusR.content)
+                                            if "== Changelog ==" in themeVContentR:
+                                                startthemeVContentR = "== Changelog =="
+                                                endthemeVContentR = "="
+                                                themeChangelogR = themeVContentR[themeVContentR.find(startthemeVContentR)+len(startthemeVContentR):themeVContentR.rfind(endthemeVContentR)]
+                                                themeChangelog1TVersionR = themeChangelogR.split("=")[1]
+                                                print "         + Version: "+themeChangelog1TVersionR
+                                                print "         - Encontrada en el Readme:"
+                                                print "           + "+themeContent.rpartition(themeName)[0]+themeName+"/readme.txt"
+                                                print ""
+                                            elif "Stable tag:" in themeVContentR:
+                                                startThemeVContentR2 = "Stable tag:"
+                                                endThemeVContentR2 = "License:"
+                                                themeChangelogR = themeVContentR[themeVContentR.find(startThemeVContentR2)+len(startThemeVContentR2):themeVContentR.rfind(endThemeVContentR2)]
+                                                print "         + Version (No segura): "+themeChangelogR
+                                                print "         - Encontrada en el Readme:"
+                                                print "           + "+themeContent.rpartition(themeName)[0]+themeName+"/readme.txt"
+                                                print ""
+                                        else:
+                                            pass
+                                        if themeStatusC.status_code == 200:
+                                            themeVContentC = themeStatusC.content
+                                            themeChangelogVersionC = themeVContentC.split("-")[0]
+                                            print "         + Version: "+themeChangelogVersionC
+                                            print "         - Encontrada en el Changelog:"
+                                            print "           + "+themeContent.rpartition(themeName)[0]+themeName+"/changelog.txt"
+                                            print ""
+                                        else:
+                                            pass
                                         break
                                 else:
                                     print chr(27)+"[0;36m"+"    [*] Tema: "+chr(27)+"[0m"
@@ -105,8 +141,46 @@ def search():
                                 if WPPlugins:
                                     print chr(27)+"[0;36m"+"    [*] Plugins: "+chr(27)+"[0m"
                                     for plugin in WPPlugins:
-                                        pluginContent = plugin["href"]
-                                        print "       - "+pluginContent.split("/")[5]
+                                        try:
+                                            pluginContent = plugin["href"]
+                                            pluginName = pluginContent.split("/")[5]
+                                            pluginStatusR = requests.get(pluginContent.rpartition(pluginName)[0]+pluginName+"/readme.txt")
+                                            pluginStatusC = requests.get(pluginContent.rpartition(pluginName)[0]+pluginName+"/changelog.txt")
+                                            print "    --------------------------"
+                                            print "       - "+pluginName
+                                            if pluginStatusR.status_code == 200:
+                                                pluginVContentR = str(pluginStatusR.content)
+                                                if "== Changelog ==" in pluginVContentR:
+                                                    startPluginVContentR = "== Changelog =="
+                                                    endPluginVContentR = "="
+                                                    pluginChangelogR = pluginVContentR[pluginVContentR.find(startPluginVContentR)+len(startPluginVContentR):pluginVContentR.rfind(endPluginVContentR)]
+                                                    pluginChangelog1VersionR = pluginChangelogR.split("=")[1]
+                                                    print "         + Version: "+pluginChangelog1VersionR
+                                                    print "         - Encontrada en el Readme:"
+                                                    print "           + "+pluginContent.rpartition(pluginName)[0]+pluginName+"/readme.txt"
+                                                else:
+                                                    pass
+
+                                            else:
+                                                pass
+                                            if pluginStatusC.status_code == 200:
+                                                print "    [*] Encontrado Changelog:"
+                                                print "         - "+pluginContent.rpartition(pluginName)[0]+pluginName+"/changelog.txt"
+                                                pluginVContentC = str(pluginStatusC.content)
+                                                """"
+                                                if "Version" in themeVContentC:
+                                                    print pluginVContentC.rpartition("Version")[2]
+                                                elif "version" in themeVContentC:
+                                                    print pluginVContentC.rpartition("version")[2]
+                                                else:
+                                                    pass
+                                                """
+                                            else:
+                                                pass
+                                        except UnicodeDecodeError as error:
+                                            print "       - "+pluginName
+                                            print "        - [*] Error de decode: "+pluginStatusC
+                                            pass
                                 else:
                                     print chr(27)+"[0;36m"+"    [*] Plugins: "+chr(27)+"[0m"
                                     print "       - No encontrados"
