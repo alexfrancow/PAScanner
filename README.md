@@ -1,3 +1,5 @@
+**OUTDATED, CURRENTLY NOT WORKS**
+
 # PAScanner
 
 Its is about a tool which can extract all business websites from an postal code that you choose. 
